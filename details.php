@@ -3,320 +3,198 @@ ob_start();
 session_start();
 error_reporting(0);
 include_once "includes/classes.php";
-$titlesub="";
-$pageh = "";
 
+$titlesub = "";
+$pageh = "";
 $current_url = $common->get_current_url();
 
-//*********************** URL REDIRECTION ***************************//
-if(isset($_GET['pgID']) && !empty($_GET['pgID']) && $common->use_friendly_urls)
-{
-
-	$stringValue = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['pgID']));
-	$exp=explode("_",$stringValue);	
-	if(!empty($exp[0]))
-	{
-		$category_id=$exp[0];
-		
-		if(isset( $_GET['ctype'] ) && $_GET['ctype']!="")
-		{
-		    $ctypeValue = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['ctype']));
-			$expsub = explode("_",$ctypeValue);
-			$category_id = $expsub[1];
-			$page_type = "subsubpage";	
-		}		
-		else if($exp[0]=="mn")
-			$page_type="page";
-		else if($exp[0]=="sb")
-			$page_type="subpage";			
-			
-		$seo_title=mysql_fetch_array(mysql_query("select url from friendly_url where id='$category_id' and type='$page_type'"));
-		if(empty($seo_title['url']))
-		{
-			if($page_type=="page")
-				$seo_title=mysql_fetch_array(mysql_query("select name  from heading where status='active' and sno='$category_id'"));
-			else if($page_type=="subpage")
-				$seo_title=mysql_fetch_array(mysql_query("select subhead as name from sub_heading where status='active' and sno='$category_id'"));
-			else if($page_type=="subsubpage")
-				$seo_title=mysql_fetch_array(mysql_query("select subhead as name from sub_sub_heading where status='active' and sno='$category_id'"));	
-		
-			$friendly_url= $common->get_auto_friendly_url($seo_title['name']);
-		}
-		else
-		{
-			$friendly_url= $seo_title['url'];
-		}
-		//header("Location:$friendly_url");
-	}
+// 1. SANITIZE INPUT (Prevents SQL Injection)
+$category_id = "";
+if (isset($_GET['pgID'])) {
+    $category_id = mysql_real_escape_string($_GET['pgID']);
 }
 
-//***************************** URL REDIRECTION ENDS HERE **********************************//
-if( $common->use_friendly_urls )
-{
-	$seo_title=mysql_query("select url,id,type from friendly_url where url='$category_id'");
-	if(mysql_num_rows($seo_title)>0)
-	{
-		$page_id=mysql_fetch_array($seo_title);	
-		$page_type =$page_id['type'];
-	}
-}
-//***************************** SEO TERMS INITIALIZATION STARTS HERE **********************************//
-	
-	$meta_title="Welcome Forest Survey of India";
-	$meta_keyword="";
-	$meta_desc="";
-	
-//***************************** SEO TERMS INITIALIZATION STARTS ENDS HERE **********************************//
+//*********************** URL REDIRECTION (SEO) ***************************//
+// Only runs if we need to redirect "sb_87" -> "brief-history"
+if (!empty($category_id) && $common->use_friendly_urls) {
+    // If input is like "sb_87" or "mn_12"
+    $exp = explode("_", $category_id);
+    if (count($exp) > 1 && ($exp[0] == "mn" || $exp[0] == "sb")) {
+        $type_check = ($exp[0] == "mn") ? 'page' : 'subpage';
+        $id_check = (int)$exp[1];
 
-$titlesub="";
+        // Find the friendly name
+        $seo_res = mysql_query("SELECT url FROM friendly_url WHERE id='$id_check' AND type='$type_check'");
+        $seo_row = mysql_fetch_array($seo_res);
+
+        if (!empty($seo_row['url'])) {
+            // Redirect to friendly URL (e.g. /brief-history)
+            header("Location: " . $seo_row['url']);
+            exit();
+        }
+    }
+}
+//***************************** REDIRECTION END *****************************//
+
+//***************************** SEO DEFAULTS ********************************//
+$meta_title = "Welcome Forest Survey of India";
+$meta_keyword = "";
+$meta_desc = "";
+//***************************************************************************//
+
+$titlesub = "";
 $isYearWise = 0;
 $PageType = "";
 $yearWisePageId = "";
 $breadpageType = "";
+$page_type = "";
+$page_id['id'] = "";
+$allid = "";
 
-
-// var_dump($page_id['id']);
-if($category_id == "privacy-policy"){
-	$page_type ="subpage";
-	$page_id['id'] = 151;
-}
-
-if($category_id == "content-contribution-moderation-approval-policy"){
-		$page_id['id'] = 157;
-}
-
-if(isset($_GET['pgID']) && $_GET['pgID']!="" || $page_type =="page"  || $page_type =="subpage")
-{
-	//  mn=" Main Menu "  sb=SUB MENU sub= sub sub menu tb=top bottom menu bo= bottom menu/
-	$imgpath="uploads/images/banner/";
-	$stringValue = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['pgID']));
-	$exp=explode("_",$stringValue);
-	$allid=$exp[0];
-	// echo($_GET['pgID']);	
-	
-	if($exp[0]=="mn" || $page_type=="page")
-	{
-		$query="select * from link_page where (heading='$a	llid' or friendly_url='$category_id') and pagehead='m' and status='active'";
-		$head="select name, sno, yearwisedata from heading where (sno='$allid' or sno='$page_id[id]') and status='active'";	
-		$pageh="i";
-		$PageType = "m";
-		$breadpageType = "main";
-	}
-	else if($exp[0]=="about")
-	{
-		$query="select * from welcome";
-		$head="select heading from welcome";
-	}
-	else if($exp[0]=="abou")
-	{
-		$query="select * from welcome_sec";
-		$head="select heading from welcome_sec";
-	}
-	if($exp[0]=="sb" || $page_type=="subpage")
-	{
-		$query="select * from link_page where (heading='$allid' or friendly_url='$category_id') and pagehead='s' and status='active'";
-		$head="select subhead, heading, sno, yearwisedata from sub_heading where (sno='$allid' or sno='$page_id[id]') and status='active'";
-		$pageh="i";
-		$PageType = "s";	
-		$breadpageType = "sub";
-	}
-	if($exp[0]=="sub")
-	{
-		$query="select * from link_page where heading='$allid' and pagehead='i' and status='active'";
-		$head="select subhead,heading from sub_sub_heading where sno='$allid' and status='active'";
-		$pageh="i";
-		$breadpageType = "subsub";		
-	}
-
-	else if($exp[0]=="qu")
-	{
-		$query="select * from link_page where heading='$allid' and pagehead='q' and status='active'";
-		$head="select name,sno from quick_menu where sno='$allid' and status='active'";
-		$pageh="q";	
-	}
-	else if($exp[0]=="tp")
-	{
-		$query="select * from link_page where heading='$allid' and pagehead='k' and status='active'";
-		$head="select name,sno from top_quick_menu where sno='$allid' and status='active'";
-		$pageh="q";	
-	}
-
-	else if($exp[0]=="bo")
-	{
-		$query="select * from link_page where heading='$allid' and pagehead='b' and status='active'";
-		$head="select name from bottom_menu where sno='$allid' and status='active'";		
-	}
-	
-	else if($exp[0]=="photos")
-	{
-		$query="select * from photo_cate where status='active'";
-		$title="Photo Gallery";
-	}
-	
-	else if($exp[0]=="photo")
-	{
-		$head="select category from photo_cate where status='active' and parentid='$_GET[type]'";
-		//$title="Photo Gallery";
-	}
-	if($exp[0]=="package" || $page_type=="package")
-	{
-		$query = "select * from package_master where ( sno = '$allid' or friendly_url = '$category_id' ) and status='1'";
-		$head = "select package_name, sno from package_master where ( sno = '$allid' or sno = '$page_id[id]' ) and status = '1'";	
-		$pageh="p";	
-	}	
-
-	if(isset($_GET['ctype']) && $_GET['ctype']!="" || $page_type == "subsubpage" )
-	{
-		$ctypevalue = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['ctype']));
-		$expsub=explode("_",$ctypevalue);
-		$allidsub=$expsub[1];
-	
-		if($page_type == "subsubpage")
-		{	
-			$query="select * from link_page where ( heading='$allidsub' || friendly_url='$category_id') and pagehead='i' and status='active'";
-			
-			$head_sub="select subhead,heading from sub_sub_heading where (sno='$allidsub' || friendly_url='$category_id') and status='active'";			
-			$row_headsub=mysql_fetch_array(mysql_query($head_sub));
-
-		}
-	}
-        if(!empty($head))
-        {
-			$row_head=mysql_fetch_array(mysql_query($head));
-			$title=$row_head[0];
-			if( $exp[0]=="sb" || $page_type=="subpage" || $exp[0]=="mn" || $page_type=="page" )
-			{
-				$isYearWise = $row_head['yearwisedata'];
-			}
-			
-			$yearWisePageId = $row_head['sno'];
-			
+// ---------------------------------------------------------
+// AUTOMATIC LOGIC: DETECT PAGE TYPE & ID FROM DATABASE
+// ---------------------------------------------------------
+if (!empty($category_id)) {
+    
+    // STEP 1: Check friendly_url table for Type and ID
+    if ($common->use_friendly_urls) {
+        $friendly_query = "SELECT * FROM friendly_url WHERE url = '$category_id'";
+        $friendly_res = mysql_query($friendly_query);
+        
+        if (mysql_num_rows($friendly_res) > 0) {
+            $f_row = mysql_fetch_array($friendly_res);
+            // AUTO-SET VARIABLES FROM DB
+            $page_type = $f_row['type'];     // e.g., 'subpage' or 'page'
+            $page_id['id'] = $f_row['id'];   // e.g., 151
+            $allid = $f_row['id'];           // Set Main ID
         }
-	
-	if(isset($_GET['ctype']) && $_GET['ctype']!="")
-	{
-		//$title=$row_headsub[0];
-		$titlesub=$row_headsub[0];
-		$titlesub=$row_headsub[0];
-	}
-	if($query!="")
-	{
-		$row_details=mysql_fetch_array(mysql_query($query));
-		$ext= substr($row_details['banner'],-3);
-		$column="detail";
-		$imgcolumn="banner";
-		
-		$_SESSION['banner'] = $row_details['banner'];
-		
-		$_SESSION['page_id'] = $row_details['pagehead'];
-		
-		$_SESSION['slider_page_id'] = $row_details['heading'];
-		
-		$imgpathp = "uploads/images/banner/";
-		if($exp[0]=="photo")
-		{
-			$imgpathp="images/gallery_pic.jpg";
-		}		
-		if(!empty($row_details['meta_title']))
-			$meta_title=$row_details['meta_title'];
-			
-		if(!empty($row_details['meta_key']))
-			$meta_keyword=$row_details['meta_key'];
-			
-		if(!empty($row_details['meta_desc']))
-			$meta_desc=$row_details['meta_desc'];
-	}
-}
-else if(isset($_GET['prID']) && $_GET['prID']!="")
-{
-	$imgpath="programs/";
-	$imgcolumn="image";
-	$programID = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['prID']));
-	$exp=explode("_",$programID);
-	$allid=$exp[0];
+    }
 
-	$query="select * from programs where status='active' and parentid='$exp[0]'";
-	$head="select subcate from programs where status='active' and parentid='$exp[0]'";
-	
-	//$row_head=mysql_fetch_array(mysql_query($head));
-	$title=$row_head[0];
+    // STEP 2: Fallback (If not found in DB, check if it's legacy 'sb_87')
+    if ($page_type == "") {
+        $exp = explode("_", $category_id);
+        if (count($exp) > 1) {
+            $prefix = $exp[0];
+            $id_val = $exp[1];
 
-	$row_details=mysql_fetch_array(mysql_query($query));
-	$ext= substr($row_details['image'],-3);
-	$column="description";
-$title=$row_details['pname'];
-	//echo $exp[0];
-}
-else if(isset($_GET['newsID']) && $_GET['newsID']!='')
-{
-    $newsid = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['newsID']));
-//onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#CCCCCC'"
-$query="select * from news where ser='$newsid'";
-$imgpath="news/";
-$row_details=mysql_fetch_array(mysql_query($query));
-$title=$row_details['title'];
-// $title=1;
-
-$attachment="news/".$row_details['extension'];
-$ext= substr($row_details['image'],-3);
-$column="description";
-if($row_details['extension']!='' && file_exists("news/".$row_details['extension']))
-{
-	$link = "news/".$row_details['extension'];
-	$target = "_blank";
-}
-$attach_post_meta = "<a href='$link' target='$target'> Click here to read more</a>";
-	
-}
-else if(isset($_GET['q']) && $_GET['q']!="")
-{
-	$imgpath="promotional_offers/";
-	$imgcolumn="image";
-	$stringVal = preg_replace('/[^a-zA-Z0-9 \-_]/', '', trim($_GET['q']));
-	$exp=explode("_",$stringVal);
-	$allid=$exp[0];
-
-	$query="select * from promotional_offers where status='active' and parentid='$exp[0]'";
-	$head="select subcate from promotional_offers where status='active' and parentid='$exp[0]'";
-	
-	$row_head=mysql_fetch_array(mysql_query($head));
-	$title=$row_head[0];
-
-	$row_details=mysql_fetch_array(mysql_query($query));
-	$ext= substr($row_details['image'],-3);
-	$column="description";
-
-}
-else
-{
-	echo "<script>location.href='index.php'</script>";
-}
-if(!empty($row_details['page_heading']))
-{
-	$title =  $row_details['page_heading'];
-	$meta_title= $row_details['meta_title'];
-	$meta_keyword= $row_details['meta_key'];
-	$meta_desc= $row_details['meta_desc'];
-
-}
-if(isset($_GET['ctype']) && !empty($_GET['ctype']) && !empty($row_details['page_heading']))
-{
-	$titlesub=$row_headsub[0];
+            if ($prefix == "mn") { $page_type = "page"; $allid = $id_val; $page_id['id'] = $id_val; }
+            elseif ($prefix == "sb") { $page_type = "subpage"; $allid = $id_val; $page_id['id'] = $id_val; }
+            elseif ($prefix == "photo") { $page_type = "photo"; } // Special case
+            // Add other prefixes here if needed
+        } else {
+            // It's a string like "brief-history" but wasn't in friendly_url?
+            // Default to subpage logic just in case
+            $page_type = "subpage";
+            $allid = $category_id; // Keep string to try matching friendly_url column
+        }
+    }
 }
 
-// $meta_title = $common->site_name;
+// Manual Override (Only keep if strictly necessary)
+if($category_id == "content-contribution-moderation-approval-policy"){
+    $page_id['id'] = 157;
+}
 
-// $meta_desc = "";
+// ---------------------------------------------------------
+// BUILD QUERY BASED ON DETECTED TYPE
+// ---------------------------------------------------------
+$query = "";
+$head = "";
 
-// $meta_keywords = "";
+if ($page_type == "page") {
+    // Main Menu (mn)
+    $query = "SELECT * FROM link_page WHERE (heading='$allid' OR friendly_url='$category_id') AND pagehead='m' AND status='active'";
+    $head = "SELECT name, sno, yearwisedata FROM heading WHERE (sno='$allid' OR sno='".$page_id['id']."') AND status='active'";
+    $pageh = "i";
+    $PageType = "m";
+    $breadpageType = "main";
+} 
+elseif ($page_type == "subpage") {
+    // Sub Menu (sb)
+    $query = "SELECT * FROM link_page WHERE (heading='$allid' OR friendly_url='$category_id') AND pagehead='s' AND status='active'";
+    $head = "SELECT subhead, heading, sno, yearwisedata FROM sub_heading WHERE (sno='$allid' OR sno='".$page_id['id']."') AND status='active'";
+    $pageh = "i";
+    $PageType = "s";
+    $breadpageType = "sub";
+}
+elseif ($page_type == "subsubpage" || (isset($_GET['ctype']) && $_GET['ctype'] != "")) {
+    // Logic for sub-sub pages
+    $allidsub = $allid; // Simplify
+    if(isset($_GET['ctype'])) {
+        $expsub = explode("_", mysql_real_escape_string($_GET['ctype']));
+        $allidsub = $expsub[1];
+    }
+    $query = "SELECT * FROM link_page WHERE (heading='$allidsub' || friendly_url='$category_id') AND pagehead='i' AND status='active'";
+    $head_sub = "SELECT subhead,heading FROM sub_sub_heading WHERE (sno='$allidsub' || friendly_url='$category_id') AND status='active'";
+    $row_headsub = mysql_fetch_array(mysql_query($head_sub));
+    $pageh = "i";
+    $breadpageType = "subsub";
+}
+elseif (isset($_GET['prID'])) {
+    // Programs
+    $programID = mysql_real_escape_string($_GET['prID']);
+    $exp = explode("_", $programID);
+    $allid = $exp[0];
+    $query = "SELECT * FROM programs WHERE status='active' AND parentid='$allid'";
+    $head = "SELECT subcate FROM programs WHERE status='active' AND parentid='$allid'";
+    $row_head = mysql_fetch_array(mysql_query($head)); // Fetch explicitly here
+    $title = $row_head[0];
+    $column = "description";
+}
+elseif ($exp[0] == "photo") {
+    // Photo Gallery
+    $safe_type = (int)$_GET['type'];
+    $head = "SELECT category FROM photo_cate WHERE status='active' AND parentid='$safe_type'";
+    $title = "Photo Gallery";
+}
+elseif (isset($_GET['newsID'])) {
+    // News
+    $newsid = mysql_real_escape_string($_GET['newsID']);
+    $query = "SELECT * FROM news WHERE ser='$newsid'";
+    $imgpath = "news/";
+    $column = "description";
+}
 
-// if(!empty($row_details['meta_title']))
-// 	$meta_title = strip_tags($row_details['meta_title']);
-// if(!empty($row_details['meta_key']))
-// 	$meta_keywords = strip_tags($row_details['meta_key']);
-// if(!empty($row_details['meta_desc']))
-// 	$meta_desc = strip_tags($row_details['meta_desc']);	
-		
+// ---------------------------------------------------------
+// EXECUTE QUERY
+// ---------------------------------------------------------
+if ($query != "") {
+    
+    // Debugging (Uncomment if needed)
+    /*
+    echo "<div style='background:yellow; padding:10px;'>Query: $query</div>";
+    */
+
+    $row_details = mysql_fetch_array(mysql_query($query));
+    
+    // Populate Data
+    if($row_details) {
+        $_SESSION['banner'] = $row_details['banner'];
+        $_SESSION['page_id'] = $row_details['pagehead'];
+        
+        if (!empty($row_details['meta_title'])) $meta_title = $row_details['meta_title'];
+        if (!empty($row_details['meta_key'])) $meta_keyword = $row_details['meta_key'];
+        if (!empty($row_details['meta_desc'])) $meta_desc = $row_details['meta_desc'];
+        
+        // Determine column names based on result
+        if (isset($row_details['detail'])) $column = "detail";
+    }
+}
+
+// Fetch Heading Title if $head is set
+if (!empty($head) && !isset($title)) {
+    $row_head = mysql_fetch_array(mysql_query($head));
+    if($row_head) {
+        $title = $row_head[0];
+        if(isset($row_head['yearwisedata'])) $isYearWise = $row_head['yearwisedata'];
+        if(isset($row_head['sno'])) $yearWisePageId = $row_head['sno'];
+    }
+}
+
+// Final Title logic
+if (!empty($row_details['page_heading'])) {
+    $title = $row_details['page_heading'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -456,10 +334,12 @@ if(isset($_GET['ctype']) && !empty($_GET['ctype']) && !empty($row_details['page_
                     <div class="section-title-style-2">
 						<h1><?php 
 								if( $category_id == "gallery" )
-								{
-									$galleryCate = mysql_fetch_array( mysql_query( "select category,description from photo_cate where status = 'active' and parentid = '$_GET[id]'"));
-									echo $galleryCate['category'];
-								}
+{
+    // FIX: Force to integer
+    $safe_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $galleryCate = mysql_fetch_array( mysql_query( "select category,description from photo_cate where status = 'active' and parentid = '$safe_id'"));
+    echo htmlentities($galleryCate['category']); // FIX: Use htmlentities for XSS protection
+}
 								else if( $row_details['banner_teaser_text'] != "")
 									echo $row_details['banner_teaser_text'];
 								else if(isset($titlesub) && $titlesub=="")
