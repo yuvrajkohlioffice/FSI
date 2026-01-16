@@ -1,0 +1,45 @@
+# --- Images ---
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.ico
+*.svg
+*.bmp
+*.tiff
+*.tif
+*.psd
+*.ai
+
+# --- Audio & Video ---
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wmv
+*.mp3
+*.wav
+*.aac
+*.flac
+*.wma
+
+# --- Archives & Compressed Files ---
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.pkg
+
+# --- Documents ---
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
+EOL
