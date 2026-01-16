@@ -1,0 +1,339 @@
+<?php
+	include_once "includes/constant.php";
+	include_once "control.php";
+	
+if(!isset($_REQUEST['action']))
+{
+	$action='';
+	view();
+	exit;
+}
+if($_GET['action']=='delete_heading')
+{
+	$query="delete from welcome_sec where sno='$_GET[sno]'";
+	$rs=mysql_query($query);
+	
+	if($rs)
+	{
+		echo "<script>location.href='principal.php?display=delete'</script>";
+	}
+	else
+	{
+		echo "<script>location.href='principal.php?error=incorrect'</script>";
+	}
+}
+
+if($_GET['action']=='remove_banner')
+{ 
+
+$sql="update welcome_sec set banner=''";
+	
+mysql_query($sql) or die(mysql_error());
+echo "<p align='center'>Please Wait..</p>";
+
+echo "<script>location.href='principal.php'</script>";
+}
+if($_GET['action']=='edit_heading')
+{
+	edit();
+	exit;
+}
+
+if($_POST['action']=='edit1')
+{
+
+$sql_off="select * from welcome_sec";
+
+$max=rand(5000,60000);
+
+$result_off=mysql_query($sql_off);
+$row=mysql_num_rows($result_off);
+
+$size=$_FILES['txtbanner'][size];
+$fname=$max."_".$_FILES['txtbanner'][name];
+$source=$_FILES['txtbanner'][tmp_name];
+
+$uploadedpath="../images/banner/";
+$dest=$uploadedpath.$fname;
+
+$desc=mysql_real_escape_string($_POST['txtdescription']);
+//$desc=$_POST['txtdescription'];
+$desc1=mysql_real_escape_string($_REQUEST['readmore']);
+//$desc1=$_POST['readmore'];
+
+if($row==0)
+{
+
+	if($size>0)
+	{
+		$query="insert into welcome_sec(front,detail,friendly_url, otherurl,target,crdate,ipaddress,userid,heading,banner) values('$desc','$desc1','$_POST[friendlyurl]','$_POST[url]','$_POST[target]','$pdate','$_SESSION[REMOTE_ADDR]','$_SESSION[uname]','$_POST[txtheading]','$fname')";
+	move_uploaded_file($source,$dest);
+	}
+	else
+	{
+		$query="insert into welcome_sec(front,detail,friendly_url, otherurl,target,crdate,ipaddress,userid,heading) values('$desc','$desc1','$_POST[friendlyurl]','$_POST[url]','$_POST[target]','$pdate','$_SESSION[REMOTE_ADDR]','$_SESSION[uname]','$_POST[txtheading]')";
+	}
+	
+$sq3="update update_tab set crdate='$pdate' ";
+mysql_query($sq3);
+
+
+}
+else
+{
+
+	if($size>0)
+	{
+		$query="update welcome_sec set front='$desc',detail='$desc1',friendly_url='$_POST[friendlyurl]',otherurl='$_POST[url]',target='$_POST[target]',modifyby='$_SESSION[uname]',heading='$_POST[txtheading]',modifydate='$pdate',ipaddress='$_SERVER[REMOTE_ADDR]',banner='$fname' ";
+		move_uploaded_file($source,$dest);
+	}
+	else
+	{
+		$query="update welcome_sec set front='$desc',detail='$desc1',friendly_url='$_POST[friendlyurl]',otherurl='$_POST[url]',target='$_POST[target]',modifyby='$_SESSION[uname]',heading='$_POST[txtheading]',modifydate='$pdate',ipaddress='$_SERVER[REMOTE_ADDR]' ";
+	}
+}
+
+	$rs=mysql_query($query) or die(mysql_error());
+	
+	mysql_query("update update_tab set crdate='$pdate'");
+	
+	if($rs)
+	{
+		echo "<script>location.href='principal.php?display=update'</script>";	
+	}
+	else
+	{
+		echo "<script>location.href='principal.php?error=incorrect'</script>";	
+	}
+
+exit;
+}
+
+
+function view()
+{
+	$res_details=mysql_query("select * from welcome_sec");
+	$row_details=mysql_fetch_array($res_details);	
+?>
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+	<meta charset="utf-8" />
+	<?php
+		include_once "head.php";
+	?>
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<body onload="burstCache();" class="page-header-fixed">
+	<!-- BEGIN HEADER -->   
+	<?php
+		include_once "header.php";
+	?>
+
+	<!-- END HEADER -->
+	<!-- BEGIN CONTAINER -->
+	<div class="page-container row-fluid">
+		<!-- BEGIN SIDEBAR -->
+		<?php
+			include_once "side_bar.php";
+		?>
+		<!-- END SIDEBAR -->
+		<!-- BEGIN PAGE -->  
+		<div class="page-content">
+			<!-- BEGIN PAGE CONTAINER-->
+			<div class="container-fluid">
+				<!-- BEGIN PAGE HEADER-->   
+				<div class="row-fluid">
+					<div class="span12">						     
+						<h3 class="page-title">
+							Website Content Management
+							<small>Add/Edit Website Content</small>
+						</h3>
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home"></i>
+								<a href="mainmenu.php">Home</a> 
+								<span class="icon-angle-right"></span>
+							</li>
+							<li>
+								<a href="#">Home Page Matter</a>
+								<span class="icon-angle-right"></span>
+							</li>
+							<li><a href="#">Principal Message</a></li>
+						</ul>
+					</div>
+				</div>
+				<!-- END PAGE HEADER-->
+				<!-- BEGIN PAGE CONTENT-->	
+				<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN SAMPLE TABLE PORTLET-->
+						<?php
+					     if(isset($_GET['error']) && !empty($_GET['error']) && $_GET['error']=='incorrect')
+					     {
+					    ?>
+						<div class="alert alert-error">
+							<button class="close" data-dismiss="alert"></button>
+							Some Error Occurred. Please try again!!
+						</div>
+						<?php
+						}
+					     if(isset($_GET['display']) && !empty($_GET['display']))
+					     {					     
+						?>
+						<div class="alert alert-success">
+							<button class="close" data-dismiss="alert"></button>
+						<?php
+							 if($_GET['display']=='add')
+					        {
+					        	echo "Record Saved Successfully..";
+					        }
+					        if($_GET['display']=='update')
+					     	{
+					     		echo "Record Updated Successfully..";
+					     	}
+					     	if($_GET['display']=='delete')
+					     	{
+					     		echo "Record Deleted Successfully..";
+					     	}
+					     ?>
+						</div>
+						<?php
+							}
+						?>
+						
+
+						<!-- END SAMPLE TABLE PORTLET-->
+					</div>					
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN VALIDATION STATES-->
+						<div class="portlet box purple">
+							<div class="portlet-title">
+								<div class="caption"><i class="icon-reorder"></i>Principal Message</div>
+								<div class="tools">
+									<a href="javascript:;" class="collapse"></a>
+									<!--a href="#portlet-config" data-toggle="modal" class="config"></a-->
+									<a href="javascript:;" class="reload"></a>
+									<!--a href="javascript:;" class="remove"></a-->
+								</div>
+							</div>
+							<div class="portlet-body form">
+								<!-- BEGIN FORM-->
+								<form action="principal.php" enctype="multipart/form-data" id="form_page" name="form_page" class="form-horizontal" method="post">
+									
+									
+									<div class="control-group">
+										<label class="control-label">Page Heading<span class="required">*</span></label>
+										<div class="controls">
+											<input type="text" name="txtheading" value="<?php echo $row_details['heading'];?>" data-required="1" class="span6 m-wrap"/>
+										</div>
+									</div>								
+									
+									<div class="control-group">
+										<label class="control-label">Upload Banner&nbsp;&nbsp;</label>
+										<div class="controls">
+											<input type="file" name="txtbanner" size="10" style="font-family: Verdana; font-size: 9pt">
+											<?php
+												if(file_exists("../images/banner/".$row_details['banner']) && $row_details['banner']!='')
+												{
+											?>
+													<font face="Trebuchet MS"><b><a target="_blank" href="../images/banner/<?php echo $row_details['banner']?>">
+															<font size="2">view attachment</font></a><font size="2">
+											<?php
+												}
+												if(file_exists("../images/banner/".$row_details['banner']) && $row_details['banner']!='')
+												{
+											?></font></b></font>
+																						&nbsp;&nbsp;&nbsp;<b>
+																						<a href="#" onclick="return false;">
+																						<label onClick="var a=confirm('Are You sure delete this from database ?');if(a==true){location.href='principal.php?action=remove_banner&ID=about';}"><font size="2" face="Trebuchet MS" color="#FF0000">
+																						Remove Attachment</font></label></a></b>
+																						<?php
+																						}
+																						?>
+</td>
+
+											<span class="help-block">e.g: only jpg,png,gif are allowed - optional field</span>
+										</div>
+									</div>																	
+									
+									<div class="control-group">
+										<label class="control-label">Menu Slug / Friendly URL&nbsp;&nbsp;</label>
+										<div class="controls">
+											<input type="text" name="friendlyurl" value="<?php echo $row_details['friendly_url'];?>" data-required="1" class="span6 m-wrap"/>
+											<span class="help-block">e.g: </span>
+										</div>
+									</div>	
+									<div class="control-group">
+										<label class="control-label">Front Page Description<span class="required">*</span></label>
+										<div class="controls">
+											<textarea class="span12 ckeditor m-wrap" id="em1" name="txtdescription" rows="6" data-error-container="#editor2_error">
+											<?php echo $row_details['front'];?></textarea>
+											<div id="editor2_error"></div>
+										</div>
+									</div>								
+									<div class="control-group">
+										<label class="control-label">Read More Page Description<span class="required">*</span></label>
+										<div class="controls">
+											<textarea class="span12 ckeditor m-wrap" id="em1" name="readmore" rows="6" data-error-container="#editor2_error">
+											<?php echo $row_details['detail'];?></textarea>
+											<div id="editor2_error"></div>
+										</div>
+									</div>	
+									<div class="control-group">
+										<label class="control-label">URL&nbsp;&nbsp;</label>
+										<div class="controls">
+											<input name="url" type="text" value="<?php echo $row_details['otherurl'];?>" class="span6 m-wrap"/>
+											<span class="help-block">e.g: http://www.demo.com or http://demo.com - optional field</span>
+										</div>
+									</div>
+									<div class="control-group">
+										<label class="control-label">Target<span class="required">*</span></label>
+										<div class="controls">
+											<select class="span6 m-wrap" name="target">
+												<option value="">Select...</option>
+												<option value="_blank" <?php if($row_details['target']=='_blank'){ echo 'selected';}?>>Open in New Window</option>
+												<option value="_self" <?php if($row_details['target']=='_self'){ echo 'selected';}?>>Open in Same Window</option>
+											</select>
+											<span class="help-block">applicable only if you enter any other link</span>
+										</div>
+									</div>	
+									<div class="form-actions">
+										<button type="submit" class="btn purple">Save</button>
+										<button type="button" class="btn">Cancel</button>									
+										<input type="hidden" name="action" size="5" value="edit1">
+										
+									</div>
+									
+								</form>
+								<!-- END FORM-->
+							</div>
+						</div>
+						<!-- END VALIDATION STATES-->
+					</div>
+				</div>				
+				<!-- END PAGE CONTENT-->         
+			</div>
+			<!-- END PAGE CONTAINER-->
+		</div>
+		<!-- END PAGE -->  
+	</div>
+	<!-- END CONTAINER -->
+	<?php
+		include_once "footer_form.php";
+	?> 
+</body>
+<!-- END BODY -->
+</html>
+<?php
+}
+?>

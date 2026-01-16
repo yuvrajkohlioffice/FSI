@@ -1,0 +1,689 @@
+<?php
+	include_once "includes/constant.php";
+	include_once "control.php";
+	
+if(!isset($_REQUEST['action']))
+{
+	$action='';
+	$md5_hash = md5(rand(0,999)); 
+	$security_code = substr($md5_hash, 15, 6); 
+	$_SESSION['capture_code']=$security_code;
+	view();
+	exit;
+}
+
+if(!isset($_POST['flag']))
+{
+	$flag='';
+}
+
+if(isset($_GET['action']) && !empty($_GET['action']) && $_GET['action']=='active')
+{
+	$capture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_SESSION['capture_code']));
+	$postcapture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_GET['log']));
+	$unid_id = preg_replace('/[^0-9]/', '', trim($_GET['sno']));
+
+	if($capture==$postcapture && $capture!="" && $postcapture!="")
+	{	
+
+		$query="update zone_users set status='inactive' where ser='$unid_id'";
+		$rs=mysql_query($query);
+		
+		if($rs)
+		{
+			echo "<script>location.href='master-zone.php?display=update'</script>";	
+		}
+		else
+		{
+			echo "<script>location.href='master-zone.php?error=incorrect'</script>";	
+		}
+	}
+	else
+	{
+		echo "<p align='center'>Please Wait..</p>";
+		echo "<script>location.href='master-zone.php?status=codeinvalid'</script>";
+	}
+}
+
+if(isset($_GET['action']) && !empty($_GET['action']) && $_GET['action']=='inactive')
+{
+	$capture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_SESSION['capture_code']));
+	$postcapture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_GET['log']));
+	$unid_id = preg_replace('/[^0-9]/', '', trim($_GET['sno']));
+
+	if($capture==$postcapture && $capture!="" && $postcapture!="")
+	{	
+
+		$query="update zone_users set status='active' where ser='$unid_id'";
+		$rs=mysql_query($query);
+	
+		if($rs)
+		{
+			echo "<script>location.href='master-zone.php?display=update'</script>";	
+		}
+		else
+		{
+			echo "<script>location.href='master-zone.php?error=incorrect'</script>";	
+		}
+	}
+	else
+	{
+		echo "<p align='center'>Please Wait..</p>";
+		echo "<script>location.href='master-zone.php?status=codeinvalid'</script>";
+	}
+}
+
+if(isset($_POST['flag']) && !empty($_POST['flag']) && $_POST['flag']==1)
+{
+	$capture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_SESSION['capture_code']));
+	$postcapture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_POST['log']));
+
+	if($capture==$postcapture && $capture!="" && $postcapture!="")
+	{	
+		
+		$user_name = preg_replace('/[^a-zA-Z]/', '', trim($_POST['username']));
+		
+		$pwd = preg_replace('/[^0-9]/', '', trim($_POST['password']));	
+		
+		$email = preg_replace('/[^0-9]/', '', trim($_POST['email']));	
+		
+		$full_name = preg_replace('/[^a-zA-Z]/', '', trim($_POST['fullname']));
+		
+		$mdpwd=md5($_POST['password']);
+	
+		$query="insert into zone_users(zone,full_name,username,password,email,enctypepwd,upload_right,status,crdate) values('$_POST[state]','$full_name','$user_name','$pwd','$email','$mdpwd','$_POST[upload_rights]','active','$crdate')";
+	
+		$rs=mysql_query($query);
+		if($rs)
+		{
+			echo "<script>location.href='master-zone.php?display=add'</script>";
+		}
+		else
+		{
+			echo "<script>location.href='master-zone.php?error=incorrect'</script>";
+		}
+	}
+	else
+	{
+		echo "<p align='center'>Please Wait..</p>";
+		echo "<script>location.href='master-zone.php?status=codeinvalid'</script>";
+	}
+}
+
+if(isset($_GET['action']) && !empty($_GET['action']) && $_GET['action']=='delete_heading')
+{
+	$capture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_SESSION['capture_code']));
+	$postcapture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_GET['log']));
+	$unid_id = preg_replace('/[^0-9]/', '', trim($_GET['sno']));
+
+	if($capture==$postcapture && $capture!="" && $postcapture!="")
+	{	
+
+		$query="delete from zone_users where ser='$unid_id'";
+		$rs=mysql_query($query);
+		
+		if($rs)
+		{
+			echo "<script>location.href='master-zone.php?display=delete'</script>";
+		}
+		else
+		{
+			echo "<script>location.href='master-zone.php?error=incorrect'</script>";
+		}
+	}
+	else
+	{
+		echo "<p align='center'>Please Wait..</p>";
+		echo "<script>location.href='master-zone.php?status=codeinvalid'</script>";
+	}
+}
+
+if(isset($_GET['action']) && !empty($_GET['action']) && $_GET['action']=='edit_heading')
+{
+	edit();
+	exit;
+}
+
+if(isset($_POST['action']) && !empty($_POST['action']) && $_POST['action']=='edit1')
+{
+	$capture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_SESSION['capture_code']));
+	$postcapture=preg_replace('/[^a-zA-Z0-9]/', '', trim($_POST['log']));
+	$unid_id = preg_replace('/[^0-9]/', '', trim($_POST['sno']));
+
+	if($capture==$postcapture && $capture!="" && $postcapture!="")
+	{	
+				
+		$user_name = preg_replace('/[^a-zA-Z]/', '', trim($_POST['username']));
+		
+		$pwd = preg_replace('/[^0-9]/', '', trim($_POST['password']));	
+		
+		$email = preg_replace('/[^0-9]/', '', trim($_POST['email']));	
+	
+		$full_name = preg_replace('/[^a-zA-Z]/', '', trim($_POST['fullname']));
+		
+		$mdpwd=md5($_POST['password']);
+		
+		$query="update zone_users set zone='$_POST[state]',full_name = '$full_name',username='$user_name',password='$pwd',email='$email',enctypepwd='$mdpwd',upload_right='$_POST[upload_rights]' where ser='$unid_id'";
+	
+		$rs=mysql_query($query) ;
+	
+		if($rs)
+		{
+			echo "<script>location.href='master-zone.php?display=update'</script>";
+		}
+		else
+		{
+			echo "<script>location.href='master-.php?error=incorrect'</script>";
+		}
+	}
+	else
+	{
+		echo "<p align='center'>Please Wait..</p>";
+		echo "<script>location.href='master-zone.php?status=codeinvalid'</script>";
+	}
+}
+
+function view()
+{
+
+?>
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+	<meta charset="utf-8" />
+	<?php
+		include_once "head.php";
+	?>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<body onload="burstCache();" class="page-header-fixed">
+	<!-- BEGIN HEADER -->   
+	<?php
+		include_once "header.php";
+	?>
+
+	<!-- END HEADER -->
+	<!-- BEGIN CONTAINER -->
+	<div class="page-container row-fluid">
+		<!-- BEGIN SIDEBAR -->
+		<?php
+			include_once "side_bar.php";
+		?>
+		<!-- END SIDEBAR -->
+		<!-- BEGIN PAGE -->  
+		<div class="page-content">
+			<!-- BEGIN PAGE CONTAINER-->
+			<div class="container-fluid">
+				<!-- BEGIN PAGE HEADER-->   
+				<div class="row-fluid">
+					<div class="span12">						     
+						<h3 class="page-title">
+							Zone User Database
+							<small>Add Zone User</small>
+						</h3>
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home"></i>
+								<a href="mainmenu.php">Home</a> 
+								<span class="icon-angle-right"></span>
+							</li>
+							<li>
+								<a href="#">Master's</a>
+								<span class="icon-angle-right"></span>
+							</li>
+							<li><a href="#">Zone Users</a></li>
+						</ul>
+					</div>
+				</div>
+				<!-- END PAGE HEADER-->
+				<!-- BEGIN PAGE CONTENT-->			
+				
+				
+				
+				<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN SAMPLE TABLE PORTLET-->
+						<?php
+					     if(isset($_GET['error']) && !empty($_GET['error']))
+					     {
+					     	 $return_msg = preg_replace('/[^a-z]/', '', trim($_GET['error']));
+
+					     	 if($return_msg == "incorrect")
+					     	 {
+					    ?>
+						<div class="alert alert-error">
+							<button class="close" data-dismiss="alert"></button>
+							Some Error Occurred. Please try again!!
+						</div>
+						<?php
+							}
+						}
+						else if(isset($_GET['status']) && !empty($_GET['status']))
+					    {
+					     	 $return_msg = preg_replace('/[^a-z]/', '', trim($_GET['status']));
+
+					     	 if($return_msg == "codeinvalid")
+					     	 {
+					    ?>
+						<div class="alert alert-error">
+							<button class="close" data-dismiss="alert"></button>
+							Unauthroize Access.
+						</div>
+						<?php
+							}
+						}
+					    else if(isset($_GET['display']) && !empty($_GET['display']))
+					    {	
+					    	$return_msg = preg_replace('/[^a-z]/', '', trim($_GET['display']));
+						?>
+						<div class="alert alert-success">
+							<button class="close" data-dismiss="alert"></button>
+						<?php
+							 if($return_msg == 'add')
+					        {
+					        	echo "Record Saved Successfully..";
+					        }
+					        if($return_msg == 'update' || $return_msg == 'status')
+					     	{
+					     		echo "Record Updated Successfully..";
+					     	}
+					     	if($return_msg == 'delete')
+					     	{
+					     		echo "Record Deleted Successfully..";
+					     	}
+					     ?>
+						</div>
+						<?php
+							}
+						?>						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption"><i class="icon-cogs"></i>Zone Users</div>
+								<div class="tools">
+									<a href="javascript:;" class="collapse"></a>
+									<!--a href="#portlet-config" data-toggle="modal" class="config"></a-->
+									<a href="javascript:;" class="reload"></a>
+									<!--a href="javascript:;" class="remove"></a-->
+								</div>
+							</div>
+							<div class="portlet-body">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th width="200">Zone Name</th>
+											<th>&nbsp;</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php
+									$sno = 0;
+									$res_state=mysql_query("select name,sno from zone_master order by name asc");
+									while($row_state=mysql_fetch_array($res_state))
+									{
+										$sno=$sno+1;
+									?>										
+										<tr>
+											<td><?php echo $sno; ?></td>
+											<td width="200"><b><?php echo $row_state['name'];?></b></td>
+											<td>
+											<?php
+											$res_kmlusers=mysql_query("select ser,username,password,status from zone_users where zone='$row_state[sno]' order by username asc");
+											if(mysql_num_rows($res_kmlusers)>0)
+											{
+											?>
+											<table border="0" width="100%" cellpadding="2" id="table1">
+											<tr>
+													<th width="50">Sno</th>
+													<th width="73">
+													User Name</th>													
+													<th width="26">
+													Status</th>
+													<th width="37" colspan="2">
+													Action</th>
+												</tr>
+											<?php
+												$count=0;
+												$res_kmlusers=mysql_query("select ser,username,password,status from zone_users where zone='$row_state[sno]' order by username asc");
+												while($row_kmlusers=mysql_fetch_array($res_kmlusers))
+												{
+													$count++;
+													
+											?>
+												
+												<tr>
+													<td width="50"><?php echo "<b>".$count.".</b>";?></td>
+													<td width="73">
+													<?php 													
+													echo $row_kmlusers['username'];
+													?>
+													</td>
+													
+													<td width="26">
+													<a href="master-zone.php?action=<?php echo $row_kmlusers['status']?>&sno=<?php echo $row_kmlusers['ser']?>&log=<?php echo $_SESSION['capture_code'];?>">
+													<?php
+													if($row_kmlusers['status']=='active')
+													{
+														echo "<img border=0 src='images/on.gif' alt=Active>";
+													}
+													else
+													{
+														echo "<img border=0 src='images/off.gif' alt=Inactive>";
+													}
+													?></td>
+													<td width="19">
+													<a href="master-zone.php?sno=<?php echo $row_kmlusers['ser'];?>&action=<?php echo 'edit_heading'?>">
+													<img border="0" src="images/edit.png" width="20" height="20" alt="Edit" name="Edit"></a></td>
+													<td width="18"><input type="image" img border="0" src="images/delete.png" width="20" height="20" onclick="var a=confirm('Are You sure delete this record from database ?');if(a==true){location.href='master-zone.php?sno=<?php echo $row_kmlusers['ser']?>&action=<?php echo 'delete_heading'?>&log=<?php echo $_SESSION['capture_code'];?>';}" alt="Delete" name="delete"></td>
+												</tr>
+											<?php
+												}
+											?>
+											</table>
+											<?php
+											}
+											else
+											{
+												echo "<strong>N.A</strong>";
+											}
+											?>
+											</td>
+											
+											</tr>
+										<?php
+										}
+										?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- END SAMPLE TABLE PORTLET-->
+					</div>					
+				</div>
+
+
+			
+				<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN VALIDATION STATES-->
+						<div class="portlet box purple">
+							<div class="portlet-title">
+								<div class="caption"><i class="icon-reorder"></i>Add New Zone User</div>
+								<div class="tools">
+									<a href="javascript:;" class="collapse"></a>
+									<!--a href="#portlet-config" data-toggle="modal" class="config"></a-->
+									<a href="javascript:;" class="reload"></a>
+									<!--a href="javascript:;" class="remove"></a-->
+								</div>
+							</div>
+							<div class="portlet-body form">
+								<!-- BEGIN FORM-->
+								<form action="master-zone.php?action=category" id="form_main_menu" class="form-horizontal" method="post">
+									<div class="alert alert-error hide">
+										<button class="close" data-dismiss="alert"></button>
+										You have some form errors. Please check below.
+									</div>
+									<div class="alert alert-success hide">
+										<button class="close" data-dismiss="alert"></button>
+										Your form validation is successful!
+									</div>
+									<div class="control-group">
+										<label class="control-label">Select Zone<span class="required">*</span></label>
+										<div class="controls">
+											<select class="span6 m-wrap" name="state" size="1">
+												<option value="">Select...</option>
+												<?php
+												$state=mysql_query("select name,sno from zone_master where status='active' order by name");
+												while($row_state=mysql_fetch_array($state))
+												{
+												?>
+												<option value="<?php echo $row_state['sno'];?>"><?php echo $row_state['name'];?></option>
+												<?php
+												}
+												?>
+											</select>
+										</div>
+									</div>	
+									
+									<div class="control-group">
+										<label class="control-label">Uploading Rights<span class="required">*</span></label>
+										<div class="controls">
+											<select class="span6 m-wrap" name="upload_rights" size="1">
+												<option value="">Select...</option>
+												<option value="1">Yes</option>
+												<option value="0">No</option>
+											</select>
+										</div>
+									</div>	
+									
+									<div class="control-group">
+										<label class="control-label">Full Name<span class="required">*</span></label>
+										<div class="controls">
+											<input type="text" name="fullname" data-required="1" class="span6 m-wrap"/>
+										</div>
+									</div>								
+
+									<div class="control-group">
+										<label class="control-label">User Name<span class="required">*</span></label>
+										<div class="controls">
+											<input type="text" name="username" data-required="1" class="span6 m-wrap"/>
+										</div>
+									</div>								
+									
+									<div class="control-group">
+										<label class="control-label">Password&nbsp;&nbsp;</label>
+										<div class="controls">
+											<input name="password" type="password" class="span6 m-wrap"/>
+											<span class="help-block"></span>
+										</div>
+									</div>																		
+									<div class="control-group">
+										<label class="control-label">Email ID<span class="required">*</span></label>
+										<div class="controls">
+											<input name="email" type="email" class="span6 m-wrap"/>
+										</div>
+									</div>									
+									
+									<div class="form-actions">
+										<button type="submit" class="btn purple">Save</button>
+										<button type="button" class="btn">Cancel</button>
+										<input type="hidden" value="<?php echo $_SESSION['capture_code'];?>" name="log">
+										<input type="hidden" name="flag" size="20" value="1">
+									</div>
+								</form>
+								<!-- END FORM-->
+							</div>
+						</div>
+						<!-- END VALIDATION STATES-->
+					</div>
+				</div>				
+				<!-- END PAGE CONTENT-->         
+			</div>
+			<!-- END PAGE CONTAINER-->
+		</div>
+		<!-- END PAGE -->  
+	</div>
+	<!-- END CONTAINER -->
+	<?php
+		include_once "footer_form.php";
+	?> 
+</body>
+<!-- END BODY -->
+</html>
+<?php
+}
+function edit()
+{
+		$menuid=preg_replace('/[^0-9]/', '', trim($_GET['sno']));
+		$query=mysql_query("select * from zone_users where ser='$menuid'") or die(mysql_error());
+		$row_content=mysql_fetch_array($query);
+?>
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+	<meta charset="utf-8" />
+	<?php
+		include_once "head.php";
+	?>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<body onload="burstCache();" class="page-header-fixed">
+	<!-- BEGIN HEADER -->   
+	<?php
+		include_once "header.php";
+	?>
+
+	<!-- END HEADER -->
+	<!-- BEGIN CONTAINER -->
+	<div class="page-container row-fluid">
+		<!-- BEGIN SIDEBAR -->
+		<?php
+			include_once "side_bar.php";
+		?>
+		<!-- END SIDEBAR -->
+		<!-- BEGIN PAGE -->  
+		<div class="page-content">
+			<!-- BEGIN SAMPLE PORTLET CONFIGURATION MODAL FORM-->
+			
+			<!-- END SAMPLE PORTLET CONFIGURATION MODAL FORM-->
+			<!-- BEGIN PAGE CONTAINER-->
+			<div class="container-fluid">
+				<!-- BEGIN PAGE HEADER-->   
+				<div class="row-fluid">
+					<div class="span12">						     
+						<h3 class="page-title">
+							Zone User Database
+							<small>Add Zone User</small>
+						</h3>
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home"></i>
+								<a href="mainmenu.php">Home</a> 
+								<span class="icon-angle-right"></span>
+							</li>
+							<li>
+								<a href="#">Master's</a>
+								<span class="icon-angle-right"></span>
+							</li>
+							<li><a href="#">Zone Users</a></li>
+						</ul>
+					</div>
+				</div>
+				<!-- END PAGE HEADER-->
+				<!-- BEGIN PAGE CONTENT-->	
+				<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN SAMPLE TABLE PORTLET-->
+					<div class="row-fluid">
+					<div class="span12">
+						<!-- BEGIN VALIDATION STATES-->
+						<div class="portlet box purple">
+							<div class="portlet-title">
+								<div class="caption"><i class="icon-reorder"></i>Edit 
+									User - <b>"<?php echo $row_content['username'];?>"</b></div>
+								<div class="tools">
+									<a href="javascript:;" class="collapse"></a>
+									<!--a href="#portlet-config" data-toggle="modal" class="config"></a-->
+									<a href="javascript:;" class="reload"></a>
+									<!--a href="javascript:;" class="remove"></a-->
+								</div>
+							</div>
+							<div class="portlet-body form">
+								<!-- BEGIN FORM-->
+								<form action="master-zone.php" id="form_main_menu" class="form-horizontal" method="post">									
+									<div class="control-group">
+										
+										<label class="control-label">Select State<span class="required">*</span></label>
+										<div class="controls">
+											<select class="span6 m-wrap" name="state" size="1">
+												<option value="">Select...</option>
+												<?php
+												$state=mysql_query("select name,sno from zone_master where status='active' order by name");
+												while($row_state=mysql_fetch_array($state))
+												{
+												?>
+												<option value="<?php echo $row_state['sno'];?>" <?php if($row_content['zone']==$row_state['sno']) { echo 'selected'; } ?>><?php echo $row_state['name'];?></option>
+												<?php
+												}
+												?>
+											</select>
+										</div>
+									</div>	
+									
+									<div class="control-group">
+										<label class="control-label">Uploading Rights<span class="required">*</span></label>
+										<div class="controls">
+											<select class="span6 m-wrap" name="upload_rights" size="1">
+												<option value="">Select...</option>
+												<option value="1" <?php if($row_content['upload_right']==1) { echo 'selected';}?>>Yes</option>
+												<option value="0" <?php if($row_content['upload_right']==0) { echo 'selected';}?>>No</option>
+											</select>
+										</div>
+									</div>	
+									
+									<div class="control-group">
+										<label class="control-label">Full Name<span class="required">*</span></label>
+										<div class="controls">
+											<input type="text" name="fullname" data-required="1" value="<?php echo $row_content['full_name'];?>" class="span6 m-wrap"/>
+										</div>
+									</div>					
+								
+									<div class="control-group">
+										<label class="control-label">User Name<span class="required">*</span></label>
+										<div class="controls">
+											<input type="text" name="username" value="<?php echo $row_content['username'];?>" data-required="1" class="span6 m-wrap"/>
+										</div>
+									</div>								
+									
+									<div class="control-group">
+										<label class="control-label">Password&nbsp;&nbsp;</label>
+										<div class="controls">
+											<input name="password" type="password" value="<?php echo $row_content['password'];?>" class="span6 m-wrap"/>
+											<span class="help-block"></span>
+										</div>
+									</div>																		
+									<div class="control-group">
+										<label class="control-label">Email ID<span class="required">*</span></label>
+										<div class="controls">
+											<input name="email" value="<?php echo $row_content['email'];?>" type="email" class="span6 m-wrap"/>
+										</div>
+									</div>									
+									
+									<div class="form-actions">
+										<button type="submit" class="btn purple">Save</button>
+										<button type="button" class="btn">Cancel</button>
+										<input type="hidden" name="action" size="20" value="edit1">
+										<input type="hidden" value="<?php echo $_SESSION['capture_code'];?>" name="log">
+										<input type="hidden" name="sno" size="20" value="<?php echo $menuid; ?>">
+									</div>
+								</form>
+								<!-- END FORM-->
+							</div>
+						</div>
+						<!-- END VALIDATION STATES-->
+					</div>
+				</div>				
+				<!-- END PAGE CONTENT-->         
+			</div>
+			<!-- END PAGE CONTAINER-->
+		</div>
+		<!-- END PAGE -->  
+	</div>
+	<!-- END CONTAINER -->
+	<?php
+		include_once "footer_form.php";
+	?> 
+</body>
+<!-- END BODY -->
+</html>
+<?php
+	
+}
+?>

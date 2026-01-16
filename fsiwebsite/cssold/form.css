@@ -1,0 +1,84 @@
+input[type="text"]:hover, textarea:hover, select:hover
+{
+	color: #19465D;
+	background: #fdfedb !important;
+	font-weight: bold;
+}
+input[type="text"], textarea, select
+{
+	margin: 0px;
+	padding: 8px 10px;
+	border: 1px solid #999;
+	background-color: #fff;
+	text-transform: capitalize;
+	text-decoration: none;
+	font-weight: bold;
+	color: #111;
+	font-size: 12px;
+	float: left;
+	width: 300px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+}
+
+input[type1="text"]
+{
+	margin: 0px;
+	padding: 8px 10px;
+	border: 1px solid #999;
+	background-color: #fff;
+	text-transform: capitalize;
+	text-decoration: none;
+	font-weight: bold;
+	color: #111;
+	font-size: 12px;
+	float: center;
+	width: 180px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+}
+
+.small-280
+{
+	width: 280px !important;
+}
+
+.small-220
+{
+	width: 220px !important;
+}
+
+table td
+{
+	font-family: 'Trebuchet Ms';
+	size: 10pt;
+}
+
+.feature_category {
+color: #643B05;
+font-weight: bold;
+padding: 5px;
+background: #E6ECEC;
+border: 1px solid #E6ECEC;
+padding: 5px 10px;
+margin-top: 10px;
+margin-bottom: 10px;
+}
+
+.button
+{
+background-color: #005364;
+color: #FFFFFF;
+padding: 12px;
+font-weight: normal;
+padding-left: 20px;
+padding-right: 20px;
+}
+
+.navigation {
+margin-top: 0px !important;
+}

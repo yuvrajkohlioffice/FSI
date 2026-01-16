@@ -1,0 +1,35 @@
+body
+{
+font-family: Arial, Tahoma, sans-serif;
+}
+.body-404, .body-403
+{
+	background: #003F00;
+	text-align: center;
+	color: #fff;
+	font-size: 14px;
+}
+.body-404 div, .body-403 div {
+padding: 10px;
+}
+
+.body-404 h1, .body-403 h1 {
+font-size: 300px;
+line-height: 250px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+line-height: 1.2;
+margin: 15px 0 10px;
+font-weight: normal;
+font-family: 'Aurulent',Tahoma,sans-serif;
+}
+
+a {
+-webkit-transition: all 0.3s;
+-moz-transition: all 0.3s;
+-o-transition: all 0.3s;
+-ms-transition: all 0.3s;
+transition: all 0.3s;
+text-decoration: none;
+color: #ef761a;
