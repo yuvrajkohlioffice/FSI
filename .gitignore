@@ -38,6 +38,7 @@
 *.docx
 *.ppt
 *.pptx
+*.xlsx
 
 # --- System Files ---
 .DS_Store
