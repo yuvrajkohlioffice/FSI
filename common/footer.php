@@ -162,5 +162,18 @@ include "includes/classes.php";
 					</div> <!-- /.credit -->
 				</div>
 			</div> 
-		</section><!-- /#bottom-bar -->
+		</section>
+			<!-- #bottom-bar -->
+		<section id="bottom-bar" class="gardener">
+    <div class="container">
+        <div class="row">
+            <div class="credit" style="text-align: center; width: 100%;">
+                
+                <p style="margin-top: 5px; font-size: 0.9em;">
+                    Last updated at: <?php echo date("d F Y", getlastmod()); ?>
+                </p>
+
+            </div> </div>
+    </div> 
+</section><!-- /#bottom-bar -->
     </section>
