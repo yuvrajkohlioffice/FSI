@@ -29,8 +29,7 @@ include 'includes/classes.php';
 	.social li {
 		display: inline-block !important;
 	}
-</style>
-<style>
+
 	.nav-header {
 		/* background: #222; */
 		padding: 10px;
@@ -99,16 +98,12 @@ include 'includes/classes.php';
 		display: none;
 		list-style: none;
 		padding-left: 20px;
-		/* background-color: #444; */
+
 	}
 
 	.toggle-icon {
 		font-weight: bold;
 		margin-left: 10px;
-	}
-
-	#sidebar-menu ul li a:hover {
-		/* background-color: #555; Highlight color on hover */
 	}
 
 	.pt {
@@ -129,29 +124,39 @@ include 'includes/classes.php';
 <div class="mainmenu-gradient-bg">
 	<!-- top header  -->
 	<div class="container">
-		<div class="row m-0">
-			<div class="col-lg-6">
+		<div class="row m-0 align-items-center py-2">
+
+			<div class="col-12 col-lg-6 text-center text-lg-left mb-2 mb-lg-0">
 				<a href="screen-reader-access" class="tt1">Screen Reader Access</a> |
 				<a href="#maincontent" class="tt1">Skip to Main Content</a> |
 				<a href="#navigation" class="tt1">Skip to Navigation</a> |
 			</div>
-			<div class="col-lg-6 text-right">
-				<ul class="social">
-					<?php if ($common->facebook) { ?><li class=""><a href="<?php echo $common->facebook; ?>" target="_blank"
-								aria-label="facebook"><i class="fa fa-facebook"></i></a></li><?php } ?>
-					<?php if ($common->twitter) { ?><li class=""><a href="<?php echo $common->twitter; ?>" target="_blank"
-								aria-label="twitter"><i class="fa fa-twitter"></i></a></li><?php } ?>
-					<?php if ($common->youtube) { ?><li class=""><a href="<?php echo $common->youtube; ?>" target="_blank"
-								aria-label="youtube"><i class="fa fa-youtube"></i></a></li><?php } ?>
-					<?php if ($common->linkedin) { ?><li class=""><a href="<?php echo $common->linkedin; ?>" target="_blank"
-								aria-label="qoo"><img src="images/qoo.png" alt="qoo" style="width:70%"></a></li>
+
+			<div class="col-12 col-lg-6 text-center text-lg-right">
+				<ul class="social m-0 p-0" style="display: inline-block;">
+					<?php if ($common->facebook) { ?>
+						<li class="list-inline-item"><a href="<?php echo $common->facebook; ?>" target="_blank" aria-label="facebook"><i class="fa fa-facebook"></i></a></li>
 					<?php } ?>
-					<li class="">
-						<a href="https://www.instagram.com/bhartiyavansarvekshan/" target="_blank"
-							aria-label="instagram"><i class="fa fa-instagram"></i></a>
+
+					<?php if ($common->twitter) { ?>
+						<li class="list-inline-item"><a href="<?php echo $common->twitter; ?>" target="_blank" aria-label="twitter"><i class="fa fa-twitter"></i></a></li>
+					<?php } ?>
+
+					<?php if ($common->youtube) { ?>
+						<li class="list-inline-item"><a href="<?php echo $common->youtube; ?>" target="_blank" aria-label="youtube"><i class="fa fa-youtube"></i></a></li>
+					<?php } ?>
+
+					<?php if ($common->linkedin) { ?>
+						<li class="list-inline-item"><a href="<?php echo $common->linkedin; ?>" target="_blank" aria-label="qoo"><img src="images/qoo.png" alt="qoo" style="width:70%"></a></li>
+					<?php } ?>
+
+					<li class="list-inline-item">
+						<a href="https://www.instagram.com/bhartiyavansarvekshan/" target="_blank" aria-label="instagram"><i class="fa fa-instagram"></i></a>
 					</li>
-					<li>|</li>
-					<li>
+
+					<li class="list-inline-item">|</li>
+
+					<li class="list-inline-item">
 						<a href="/hindi" class="tt1">Hindi</a>
 					</li>
 				</ul>
