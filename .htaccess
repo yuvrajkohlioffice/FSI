@@ -1,9 +1,0 @@
-RewriteEngine On
-RewriteBase /
-
-# If the request is not a real file or directory
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Send the request to details.php with the URL as a parameter
-RewriteRule ^(.*)$ details.php?pgID=$1 [L,QSA]
