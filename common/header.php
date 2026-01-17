@@ -4,8 +4,22 @@ include_once "router.php";
 ?>
 <style media="print">
 	@media print {
-
-		header,
+.rev_slider_wrapper #slider1 .banner-btn {
+		padding:0px !important;
+		
+	}
+	.img-responsive{
+	   max-width:100% !important;
+	   height:auto !important;
+	}
+	header {
+    background:  #f9c301 !important;
+	height: 142px !important;
+	background-repeat: no-repeat !important;
+    background-size: 100% 100% !important; 
+    padding: 15px 0 42px !important;
+}
+		
 		footer {
 			display: block !important;
 			background: none !important;
@@ -19,6 +33,32 @@ include_once "router.php";
 		footer * {
 			color: #000 !important;
 		}
+
+    /* 1. HIDE THE URL TEXT IN BRACKETS */
+    /* This stops the browser from adding (http://...) after your icons and links */
+    a[href]:after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* 2. PRESERVE SOCIAL ICON LAYOUT */
+    /* Ensures icons stay in a line and don't stack vertically */
+    .social, .list-inline-item {
+        display: inline-block !important;
+    }
+
+    /* 3. MAINTAIN COLORS FOR ICONS */
+    /* Ensures the colors and fonts from Font-Awesome are respected */
+    .fa, .social a, .tt1 {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+
+    /* 4. OPTIONAL: Hide the social bar entirely if you don't want it on paper */
+    /* Uncomment the line below if you want to remove the social icons from the printout */
+    /* .social { display: none !important; } */
 
 		/* Optional: Add a page break after header or before footer if needed */
 		/* header { page-break-after: avoid; } */
