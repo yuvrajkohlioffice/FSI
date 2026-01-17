@@ -3,6 +3,7 @@ ob_start();
 session_start();
 error_reporting(0);
 include_once "includes/classes.php";
+
 $meta_title = $common->site_name;
 $meta_desc = "";
 $meta_keywords = "";

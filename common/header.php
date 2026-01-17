@@ -1,5 +1,6 @@
 <?php
 include 'includes/classes.php';
+include_once "router.php";
 ?>
 <style media="print">
 	@media print {
@@ -191,27 +192,27 @@ include 'includes/classes.php';
 					</div>
 					<div class="clearfix"></div>
 
-<div class="text-box">
-    <p>
-        <a href="/contact-us" style="color: #000000; text-decoration: none;">
-            <span class="highlighted" style="color: #000000; font-weight: 600;">
-                <i class="fa fa-phone"></i> Contact Us
-            </span>
-        </a>
-    </p>
-</div>
+					<div class="text-box">
+						<p>
+							<a href="/contact-us" style="color: #000000 !important; text-decoration: none;">
+								<span class="highlighted" style="color: #000000 !important; font-weight: 600;">
+									<i class="fa fa-phone"></i> Contact Us
+								</span>
+							</a>
+						</p>
+					</div>
 
-<div class="text-box">
-    <p>
-        <span class="highlighted" style="color: #000000; font-weight: 600;">
-            <i class="fa fa-envelope"></i> 
-            <?php 
-                $emailValues = explode(',', htmlentities($common->default_email));
-                echo htmlentities($emailValues[0]); 
-            ?>
-        </span>
-    </p>
-</div>
+					<div class="text-box">
+						<p>
+							<span class="highlighted" style="color: #000000; font-weight: 600;">
+								<i class="fa fa-envelope"></i>
+								<?php
+								$emailValues = explode(',', htmlentities($common->default_email));
+								echo htmlentities($emailValues[0]);
+								?>
+							</span>
+						</p>
+					</div>
 				</div>
 
 				<div class="info-box">
